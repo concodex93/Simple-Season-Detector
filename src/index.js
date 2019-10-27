@@ -1,12 +1,40 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import * as serviceWorker from './serviceWorker';
+import React from "react";
+import ReactDOM from "react-dom";
 
-ReactDOM.render(<App />, document.getElementById('root'));
+class App extends React.Component {
+  constructor(props) {
+    super(props);
+    // State object
+    // Only time we do direct assignment to state object
+    this.state = {
+      latitude: null,
+      errorMessage: ""
+    };
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
+    window.navigator.geolocation.getCurrentPosition(
+      position => {
+        this.setState({ latitude: position.coords.latitude });
+      },
+      error => {
+        this.setState({ errorMessage: error.message });
+      }
+    );
+  }
+
+  // render method required
+  render() {
+    console.log("render method was called!");
+    // Conditioinal rendering
+    // No latitude and error message
+    if (this.state.errorMessage && !this.state.latitude) {
+      return <div> Error: {this.state.errorMessage}</div>;
+      // Latitude returned and no error message
+    } else if (!this.state.errorMessage && this.state.latitude) {
+      return <div>Latitude:{this.state.latitude}</div>;
+    } else {
+      return <div>Loading ....</div>;
+    }
+  }
+}
+
+ReactDOM.render(<App />, document.querySelector("#root"));
